@@ -1,3 +1,3 @@
 # EdTech-Platform
 
-Testing is pending, that's why not uploaded yet.
+Till now i have completed the Backend part of the project.
