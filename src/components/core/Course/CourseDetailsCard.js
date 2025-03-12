@@ -6,7 +6,6 @@ import { FaShareSquare } from "react-icons/fa"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import {enroll} from "../../../services/operations/studentFeaturesAPI"
-import { addToCart } from "../../../slices/cartSlice"
 import { ACCOUNT_TYPE } from "../../../utils/constants"
 
 
@@ -27,10 +26,6 @@ function CourseDetailsCard({ course, setConfirmationModal, handleBuyCourse }) {
     toast.success("Link copied to clipboard")
   }
 
-  
-
-  // console.log("Student already enrolled ", course?.studentsEnroled, user?._id)
-
   return (
     <>
       <div
@@ -44,9 +39,6 @@ function CourseDetailsCard({ course, setConfirmationModal, handleBuyCourse }) {
         />
 
         <div className="px-4">
-          {/* <div className="space-x-3 pb-4 text-3xl font-semibold">
-            Rs. {CurrentPrice}
-          </div> */}
           <div className="flex flex-col gap-4">
             <button
               className="yellowButton"
@@ -61,11 +53,6 @@ function CourseDetailsCard({ course, setConfirmationModal, handleBuyCourse }) {
                 : "Enroll"}
             </button>
           </div>
-          {/* <div>
-            <p className="pb-3 pt-6 text-center text-sm text-richblack-25">
-              30-Day Money-Back Guarantee
-            </p>
-          </div> */}
 
           <div className={``}>
             <p className={`my-2 text-xl font-semibold `}>

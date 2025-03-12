@@ -13,7 +13,6 @@ function SignupForm() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  // student or instructor
   const [accountType, setAccountType] = useState(ACCOUNT_TYPE.STUDENT)
 
   const [formData, setFormData] = useState({
@@ -29,7 +28,6 @@ function SignupForm() {
 
   const { firstName, lastName, email, password, confirmPassword } = formData
 
-  // Handle input fields, when some value changes
   const handleOnChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -37,7 +35,6 @@ function SignupForm() {
     }))
   }
 
-  // Handle Form Submission
   const handleOnSubmit = (e) => {
     e.preventDefault()
 
@@ -50,8 +47,6 @@ function SignupForm() {
       accountType,
     }
 
-    // Setting signup data to state
-    // To be used after otp verification
     dispatch(setSignupData(signupData))
     dispatch(
       signUp(
@@ -64,10 +59,7 @@ function SignupForm() {
         navigate
       )
     );
-    // Send OTP to user for verification
-    //dispatch(sendOtp(formData.email, navigate))
 
-    // Reset
     setFormData({
       firstName: "",
       lastName: "",
@@ -78,7 +70,7 @@ function SignupForm() {
     setAccountType(ACCOUNT_TYPE.STUDENT)
   }
 
-  // data to pass to Tab component
+
   const tabData = [
     {
       id: 1,

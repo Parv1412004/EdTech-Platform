@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { fetchInstructorCourses } from "../../../services/operations/courseDetailsAPI"
 import IconBtn from "../../common/IconBtn"
 import CoursesTable from "./InstructorCourses/CoursesTable"
+import { fetchCourseDetails } from "../../../services/operations/courseDetailsAPI"
 
 export default function MyCourses() {
   const { token } = useSelector((state) => state.auth)
@@ -15,12 +16,16 @@ export default function MyCourses() {
   useEffect(() => {
     const fetchCourses = async () => {
       const result = await fetchInstructorCourses(token)
-      if (result) {
-        setCourses(result)
+      const courseIds = result.map(course => course._id); 
+
+      const courseDetailsArray = await Promise.all(
+        courseIds.map(courseId => fetchCourseDetails(courseId))
+      );
+      if (courseDetailsArray) {
+        setCourses(courseDetailsArray)
       }
     }
     fetchCourses()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

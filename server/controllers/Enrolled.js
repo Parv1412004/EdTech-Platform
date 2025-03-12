@@ -21,11 +21,10 @@ exports.enrollStudents = async (req,res) => {
         .json({ success: false, message: "Please Provide User ID" })
     }
     console.log(courses,userId,'y');
-    // Convert string IDs to ObjectIds
+
     const courseId = new mongoose.Types.ObjectId(courses);
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // Find the course and enroll the student in it
     const enrolledCourse = await Course.findOneAndUpdate(
       { _id: courseId },
       { $push: { studentsEnrolled: userObjectId } },
@@ -34,7 +33,7 @@ exports.enrollStudents = async (req,res) => {
 
     if (!enrolledCourse) {
       return res
-        .status(404)  // Changed to 404 since resource not found
+        .status(404)  
         .json({ success: false, error: "Course not found" })
     }
     console.log("Updated course: ", enrolledCourse)
@@ -45,7 +44,6 @@ exports.enrollStudents = async (req,res) => {
       completedVideos: [],
     })
 
-    // Find the student and add the course to their list of enrolled courses
     const enrolledStudent = await User.findByIdAndUpdate(
       userObjectId,
       {
@@ -58,7 +56,7 @@ exports.enrollStudents = async (req,res) => {
     )
 
     console.log("Enrolled student: ", enrolledStudent)
-    
+
     if (!enrolledStudent) {
       return res
         .status(404)
@@ -69,7 +67,7 @@ exports.enrollStudents = async (req,res) => {
       success: true,
       message: "Student enrolled successfully"
     })
-    
+
   } catch (error) {
     console.error("Enrollment error:", error)
     return res.status(400).json({ 

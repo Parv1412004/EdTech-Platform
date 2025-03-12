@@ -28,7 +28,7 @@ export default function CoursesTable({ courses, setCourses }) {
 
   const handleCourseDelete = async (courseId) => {
     setLoading(true)
-    await deleteCourse({ courseId: courseId }, token)
+    const res = await deleteCourse({ courseId: courseId }, token)
     const result = await fetchInstructorCourses(token)
     if (result) {
       setCourses(result)
@@ -37,7 +37,6 @@ export default function CoursesTable({ courses, setCourses }) {
     setLoading(false)
   }
 
-  // console.log("All Course ", courses)
 
   return (
     <>
@@ -63,38 +62,38 @@ export default function CoursesTable({ courses, setCourses }) {
             <Tr>
               <Td className="py-10 text-center text-2xl font-medium text-richblack-100">
                 No courses found
-                {/* TODO: Need to change this state */}
+            
               </Td>
             </Tr>
           ) : (
             courses?.map((course) => (
               <Tr
-                key={course._id}
+                key={course.data.courseDetails._id}
                 className="flex gap-x-10 border-b border-richblack-800 px-6 py-8"
               >
                 <Td className="flex flex-1 gap-x-4">
                   <img
-                    src={course?.thumbnail}
-                    alt={course?.courseName}
+                    src={course.data.courseDetails?.thumbnail}
+                    alt={course.data.courseDetails?.courseName}
                     className="h-[148px] w-[220px] rounded-lg object-cover"
                   />
                   <div className="flex flex-col justify-between">
                     <p className="text-lg font-semibold text-richblack-5">
-                      {course.courseName}
+                      {course.data.courseDetails.courseName}
                     </p>
                     <p className="text-xs text-richblack-300">
-                      {course.courseDescription.split(" ").length >
+                      {course.data.courseDetails.courseDescription.split(" ").length >
                       TRUNCATE_LENGTH
-                        ? course.courseDescription
+                        ? course.data.courseDetails.courseDescription
                             .split(" ")
                             .slice(0, TRUNCATE_LENGTH)
                             .join(" ") + "..."
-                        : course.courseDescription}
+                        : course.data.courseDetails.courseDescription}
                     </p>
                     <p className="text-[12px] text-white">
-                      Created: {formatDate(course.createdAt)}
+                      Created: {formatDate(course.data.courseDetails.createdAt)}
                     </p>
-                    {course.status === COURSE_STATUS.DRAFT ? (
+                    {course.data.courseDetails.status === COURSE_STATUS.DRAFT ? (
                       <p className="flex w-fit flex-row items-center gap-2 rounded-full bg-richblack-700 px-2 py-[2px] text-[12px] font-medium text-pink-100">
                         <HiClock size={14} />
                         Drafted
@@ -110,16 +109,16 @@ export default function CoursesTable({ courses, setCourses }) {
                   </div>
                 </Td>
                 <Td className="text-sm font-medium text-richblack-100">
-                  2hr 30min
+                  {course.data.totalDuration}
                 </Td>
                 <Td className="text-sm font-medium text-richblack-100">
-                  ₹{course.price}
+                  ₹{course.data.courseDetails.price}
                 </Td>
                 <Td className="text-sm font-medium text-richblack-100 ">
                   <button
                     disabled={loading}
                     onClick={() => {
-                      navigate(`/dashboard/edit-course/${course._id}`)
+                      navigate(`/dashboard/edit-course/${course.data.courseDetails._id}`)
                     }}
                     title="Edit"
                     className="px-2 transition-all duration-200 hover:scale-110 hover:text-caribbeangreen-300"
@@ -136,7 +135,7 @@ export default function CoursesTable({ courses, setCourses }) {
                         btn1Text: !loading ? "Delete" : "Loading...  ",
                         btn2Text: "Cancel",
                         btn1Handler: !loading
-                          ? () => handleCourseDelete(course._id)
+                          ? () => handleCourseDelete(course.data.courseDetails._id)
                           : () => {},
                         btn2Handler: !loading
                           ? () => setConfirmationModal(null)

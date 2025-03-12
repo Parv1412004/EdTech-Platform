@@ -1,8 +1,4 @@
-// Image and Video Import
 import studentlearning from "../assets/Images/student_learning.mp4"
-// Component Imports
-import Footer from "../components/common/Footer"
-import ReviewSlider from "../components/common/ReviewSlider"
 import CTAButton from "../components/core/HomePage/Button"
 import HighlightText from "../components/core/HomePage/HighlightText"
 import InstructorSection from "../components/core/HomePage/InstructorSection"
@@ -54,9 +50,6 @@ function Home() {
 
         
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   )
 }

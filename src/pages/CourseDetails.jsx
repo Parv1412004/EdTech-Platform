@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 
 import ConfirmationModal from "../components/common/ConfirmationModal"
-import Footer from "../components/common/Footer"
 import RatingStars from "../components/common/RatingStars"
 import CourseAccordionBar from "../components/core/Course/CourseAccordionBar"
 import CourseDetailsCard from "../components/core/Course/CourseDetailsCard"
@@ -15,6 +14,7 @@ import { fetchCourseDetails } from "../services/operations/courseDetailsAPI"
 import { enroll } from "../services/operations/studentFeaturesAPI"
 import GetAvgRating from "../utils/avgRating"
 import Error from "./Error"
+import toast from "react-hot-toast"
 
 function CourseDetails() {
   const { user } = useSelector((state) => state.profile)
@@ -24,19 +24,14 @@ function CourseDetails() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  // Getting courseId from url parameter
   const { courseId } = useParams()
-  // console.log(`course id: ${courseId}`)
-
-  // Declear a state to save the course details
   const [response, setResponse] = useState(null)
   const [confirmationModal, setConfirmationModal] = useState(null)
   useEffect(() => {
-    // Calling fetchCourseDetails fucntion to fetch the details
     ;(async () => {
       try {
         const res = await fetchCourseDetails(courseId)
-        // console.log("course details res: ", res)
+        console.log("course details res: ", res)
         setResponse(res)
       } catch (error) {
         console.log("Could not fetch Course Details")
@@ -44,21 +39,15 @@ function CourseDetails() {
     })()
   }, [courseId])
 
-  // console.log("response: ", response)
-
-  // Calculating Avg Review count
   const [avgReviewCount, setAvgReviewCount] = useState(0)
   useEffect(() => {
     const count = GetAvgRating(response?.data?.courseDetails.ratingAndReviews)
     setAvgReviewCount(count)
   }, [response])
-  // console.log("avgReviewCount: ", avgReviewCount)
-
-  // // Collapse all
-  // const [collapse, setCollapse] = useState("")
+  
   const [isActive, setIsActive] = useState(Array(0))
   const handleActive = (id) => {
-    // console.log("called", id)
+
     setIsActive(
       !isActive.includes(id)
         ? isActive.concat([id])
@@ -66,7 +55,6 @@ function CourseDetails() {
     )
   }
 
-  // Total number of lectures
   const [totalNoOfLectures, setTotalNoOfLectures] = useState(0)
   useEffect(() => {
     let lectures = 0
@@ -101,8 +89,14 @@ function CourseDetails() {
   } = response.data?.courseDetails
 
   const handleEnrollCourse = () => {
-    if (token) {
+    if (token&&user.accountType!=="Instructor") {
       enroll(token,courseId, user, navigate, dispatch)
+      toast.success("Enrolled Successfully")
+      navigate("/dashboard/enrolled-courses")
+      return
+    }
+    else if(token&&user.accountType==="Instructor"){
+      toast.error("Instructor can't Enroll.")
       return
     }
     setConfirmationModal({
@@ -118,7 +112,6 @@ function CourseDetails() {
   
 
   if (paymentLoading) {
-    // console.log("payment loading")
     return (
       <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center">
         <div className="spinner"></div>
@@ -172,9 +165,6 @@ function CourseDetails() {
               </div>
             </div>
             <div className="flex w-full flex-col gap-4 border-y border-y-richblack-500 py-4 lg:hidden">
-              {/* <p className="space-x-3 pb-4 text-3xl font-semibold text-richblack-5">
-                Rs. {price}
-              </p> */}
               <button className="yellowButton" onClick={handleEnrollCourse}>
                 Enroll
               </button>
@@ -259,7 +249,6 @@ function CourseDetails() {
           </div>
         </div>
       </div>
-      <Footer />
       {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
     </>
   )

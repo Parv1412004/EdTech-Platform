@@ -45,10 +45,6 @@ exports.showAllCategories = async (req, res) => {
 	}
 };
 
-//categoryPageDetails 
-
-
-
 exports.categoryPageDetails = async (req, res) => {
     try {
       const { categoryId } = req.body
@@ -58,12 +54,11 @@ exports.categoryPageDetails = async (req, res) => {
           })
       }
       console.log("PRINTING CATEGORY: ", categoryId);
-      
+
       const categoryObjectId = new mongoose.Types.ObjectId(categoryId);
-      
+
       console.log("PRINTING CATEGORY ID: ", categoryObjectId);
-      
-      // Get courses for the specified category
+
       const selectedCategory = await Category.findById(categoryObjectId)
         .populate({
           path: "courses",
@@ -71,7 +66,7 @@ exports.categoryPageDetails = async (req, res) => {
           populate: "ratingAndReviews",
         })
         .exec()
-  
+
       if (!selectedCategory) {
         console.log("Category not found.")
         return res
@@ -86,40 +81,39 @@ exports.categoryPageDetails = async (req, res) => {
           message: "No courses found for the selected category.",
         })
       }
-  
-      // Get courses for other categories
+
       const categoriesExceptSelected = await Category.find({
         _id: { $ne: categoryObjectId },
       })
 
-      // Initialize differentCategory as null
       let differentCategory = null;
 
-      // Only try to get different category if there are other categories
       if (categoriesExceptSelected && categoriesExceptSelected.length > 0) {
         const randomIndex = getRandomInt(categoriesExceptSelected.length);
         const randomCategory = categoriesExceptSelected[randomIndex];
-        
+
         if (randomCategory && randomCategory._id) {
           differentCategory = await Category.findOne(randomCategory._id)
             .populate({
               path: "courses",
               match: { status: "Published" },
+              populate:"ratingAndReviews"
             })
             .exec()
         }
       }
 
-      // Get top-selling courses across all categories
       const allCategories = await Category.find()
-        .populate({
-          path: "courses",
-          match: { status: "Published" },
-          populate: {
-            path: "instructor",
-        },
-        })
-        .exec()
+      .populate({
+        path: "courses",
+        match: { status: "Published" },
+        populate: [
+          { path: "instructor" },  
+          { path: "ratingAndReviews" }  
+        ],
+      })
+      .exec();
+
       const allCourses = allCategories.flatMap((category) => category.courses)
       const mostSellingCourses = allCourses
         .sort((a, b) => b.sold - a.sold)
